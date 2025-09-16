@@ -1,0 +1,8 @@
+namespace mpv_winui2_demo
+{
+    [default_interface]
+    runtimeclass MainPage : Windows.UI.Xaml.Controls.Page
+    {
+        MainPage();
+    }
+}

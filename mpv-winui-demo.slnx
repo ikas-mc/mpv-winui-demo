@@ -1,0 +1,13 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="mpv-winui-share/mpv-winui-share.vcxitems" Id="ccf66438-3cb0-4ae8-a25b-46ea17f8d9d3" />
+  <Project Path="mpv-winui2-demo/mpv-winui2-demo.vcxproj" Id="06a7a53b-48d7-47a2-8c9c-a98a9f02e9e2">
+    <Deploy />
+  </Project>
+  <Project Path="mpv-winui3-demo/mpv-winui3-demo.vcxproj" Id="26dd4070-9363-4ba2-ac43-0dadee29eb4e">
+    <Deploy />
+  </Project>
+</Solution>
