@@ -25,12 +25,13 @@ namespace mpv
         }
     }
 
-    void MpvPlayer::Initialize(uint32_t width, uint32_t height)
+    bool MpvPlayer::Initialize(uint32_t width, uint32_t height)
     {
         m_mpv = mpv_create();
         if (!m_mpv)
         {
-            throw std::runtime_error("Failed to create mpv context");
+            OutputDebugStringA("mpv_create failed with");
+            return false;
         }
 
         mpv_set_option_string(m_mpv, "hwdec", "auto");
@@ -39,22 +40,35 @@ namespace mpv
         mpv_set_option_string(m_mpv, "d3d11-output-mode", "composition");
         mpv_set_option_string(m_mpv, "force-window", "immediate");
 
+        // width and height must be > 0
         UpdateSize(width, height);
 
-        if (mpv_initialize(m_mpv) < 0)
+        int result = mpv_initialize(m_mpv);
+        if (result < 0)
         {
-            throw std::runtime_error("Failed to initialize mpv");
+            auto msg = mpv_error_string(result);
+            OutputDebugStringA(std::format("mpv_initialize failed with error : {}", msg).c_str());
+            return false;
         }
 
         mpv_get_property(m_mpv, "display-swapchain", MPV_FORMAT_INT64, &m_swapChain);
         if (!m_swapChain)
         {
-            throw std::runtime_error("Failed to get swapchain");
+            OutputDebugStringA("Failed to get swapchain");
+            return false;
         }
+
+        return true;
     }
 
     void MpvPlayer::SetSwapChainPanel(SwapChainPanel panel)
     {
+        if (!m_swapChain)
+        {
+            OutputDebugStringA("swapchain is null, check Initialize");
+            return;
+        }
+
         winrt::com_ptr<ISwapChainPanelNative> panelNative;
         if (panel.try_as(panelNative))
         {
@@ -73,12 +87,20 @@ namespace mpv
         {
             return;
         }
+
         std::string size = std::format("{}x{}", width, height);
-        // mpv_set_option_string(m_mpv, "d3d11-composition-size", size.c_str());
+
+		// TODO 
+        mpv_set_option_string(m_mpv, "d3d11-composition-size", size.c_str());
     }
 
     void MpvPlayer::Play(const std::wstring_view& url)
     {
+        if (!m_mpv)
+        {
+            return;
+        }
+
         std::string path = winrt::to_string(url);
         const char* cmd[] = { "loadfile", path.c_str(), NULL };
 
@@ -87,6 +109,11 @@ namespace mpv
 
     void MpvPlayer::ApplyColorOptionsSDR()
     {
+        if (!m_mpv)
+        {
+            return;
+        }
+
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "no");
         mpv_set_option_string(m_mpv, "target-prim", "bt.709");
         mpv_set_option_string(m_mpv, "target-trc", "srgb");
@@ -94,12 +121,22 @@ namespace mpv
 
     void MpvPlayer::ApplyColorOptionsWCG()
     {
+        if (!m_mpv)
+        {
+            return;
+        }
+
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "yes");
         mpv_set_option_string(m_mpv, "target-colorspace-hint-mode", "source");
     }
 
     void MpvPlayer::ApplyColorOptionsHDR()
     {
+        if (!m_mpv)
+        {
+            return;
+        }
+
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "yes");
         mpv_set_option_string(m_mpv, "target-colorspace-hint-mode", "source");
     }

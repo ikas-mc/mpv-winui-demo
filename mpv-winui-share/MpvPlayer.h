@@ -18,7 +18,7 @@ namespace mpv
         MpvPlayer();
         ~MpvPlayer();
 
-        void Initialize(uint32_t width, uint32_t height);
+        bool Initialize(uint32_t width, uint32_t height);
         void SetSwapChainPanel(SwapChainPanel panel);
         void UpdateSize(uint32_t width, uint32_t height);
         void Play(const std::wstring_view& url);

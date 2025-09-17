@@ -6,6 +6,8 @@ Most of the code is AI-generated and is for demo/testing purposes only.
 
 When using composition mode, you need to set the color space information yourself.
 
+<img src="https://raw.githubusercontent.com/ikas-mc/mpv-winui-demo/main/screenshots/winui.png" width=563 >
+
 In UWP, use DisplayInformation GetAdvancedColorInfo to get color information.
 
 ```c++
