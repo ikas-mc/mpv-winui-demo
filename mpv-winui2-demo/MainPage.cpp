@@ -40,6 +40,13 @@ namespace winrt::mpv_winui2_demo::implementation
         m_mpvPlayer->UpdateSize(width, height);
     }
 
+    void MainPage::PlayerView_CompositionScaleChanged(SwapChainPanel const& sender, IInspectable const& args)
+    {
+        auto scaleX = PlayerView().CompositionScaleX();
+        auto scaleY = PlayerView().CompositionScaleY();
+        m_mpvPlayer->UpdateSwapChainScale(scaleX, scaleY);
+    }
+
     void MainPage::ApplyColorSettings()
     {
         auto displayInformation = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();

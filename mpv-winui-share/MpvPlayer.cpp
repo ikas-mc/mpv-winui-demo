@@ -75,9 +75,19 @@ namespace mpv
             panelNative->SetSwapChain(m_swapChain);
         }
 
+        UpdateSwapChainScale(panel.CompositionScaleX(), panel.CompositionScaleY());
+    }
+
+    void MpvPlayer::UpdateSwapChainScale(float scaleX, float scaleY)
+    {
+        if (!m_swapChain)
+        {
+            return;
+        }
+
         DXGI_MATRIX_3X2_F inverseScale{ 0 };
-        inverseScale._11 = 1.0f / panel.CompositionScaleX();
-        inverseScale._22 = 1.0f / panel.CompositionScaleY();
+        inverseScale._11 = 1.0f / scaleX;
+        inverseScale._22 = 1.0f / scaleY;
         m_swapChain->SetMatrixTransform(&inverseScale);
     }
 
@@ -90,7 +100,7 @@ namespace mpv
 
         std::string size = std::format("{}x{}", width, height);
 
-		// TODO 
+        // TODO
         mpv_set_option_string(m_mpv, "d3d11-composition-size", size.c_str());
     }
 

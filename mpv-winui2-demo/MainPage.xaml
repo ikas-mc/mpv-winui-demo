@@ -13,7 +13,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <SwapChainPanel x:Name="PlayerView" SizeChanged="PlayerView_SizeChanged" />
+        <SwapChainPanel x:Name="PlayerView" SizeChanged="PlayerView_SizeChanged" CompositionScaleChanged="PlayerView_CompositionScaleChanged" />
 
         <Grid
             Grid.Row="1"

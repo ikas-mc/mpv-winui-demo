@@ -43,6 +43,13 @@ namespace winrt::mpv_winui3_demo::implementation
         m_mpvPlayer->UpdateSize(width, height);
     }
 
+    void MainWindow::PlayerView_CompositionScaleChanged(SwapChainPanel const& sender, IInspectable const& args)
+    {
+        auto scaleX = PlayerView().CompositionScaleX();
+        auto scaleY = PlayerView().CompositionScaleY();
+        m_mpvPlayer->UpdateSwapChainScale(scaleX, scaleY);
+    }
+
     DisplayColorMode MainWindow::GetTargetColorInfo(HWND hwnd)
     {
         DisplayColorMode colorMode{};
@@ -123,4 +130,5 @@ namespace winrt::mpv_winui3_demo::implementation
             m_mpvPlayer->ApplyColorOptionsSDR();
         }
     }
+
 } // namespace winrt::mpv_winui3_demo::implementation

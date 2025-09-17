@@ -18,6 +18,10 @@ namespace winrt::mpv_winui2_demo::implementation
 
     private:
         std::unique_ptr<mpv::MpvPlayer> m_mpvPlayer;
+
+    public:
+        void PlayerView_CompositionScaleChanged(winrt::Windows::UI::Xaml::Controls::SwapChainPanel const& sender,
+                                                winrt::Windows::Foundation::IInspectable const& args);
     };
 } // namespace winrt::mpv_winui2_demo::implementation
 

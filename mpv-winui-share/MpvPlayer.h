@@ -20,6 +20,7 @@ namespace mpv
 
         bool Initialize(uint32_t width, uint32_t height);
         void SetSwapChainPanel(SwapChainPanel panel);
+        void UpdateSwapChainScale(float scaleX, float scaleY);
         void UpdateSize(uint32_t width, uint32_t height);
         void Play(const std::wstring_view& url);
 
