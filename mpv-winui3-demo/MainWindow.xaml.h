@@ -16,21 +16,19 @@ namespace winrt::mpv_winui3_demo::implementation
         MainWindow();
         void InitializeComponent();
 
-        void PlayButton_Click(winrt::Windows::Foundation::IInspectable const& sender,
-                              winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void PlayButton_Click(winrt::Windows::Foundation::IInspectable const&,
+                              winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
         void PlayerView_SizeChanged(Windows::Foundation::IInspectable const&,
-                                    winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& args);
+                                    winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const&);
+        void PlayerView_CompositionScaleChanged(winrt::Microsoft::UI::Xaml::Controls::SwapChainPanel const&,
+                                                winrt::Windows::Foundation::IInspectable const&);
 
+        DisplayColorMode GetTargetColorInfoWin32(HWND hwnd);
+        DisplayColorMode GetTargetColorInfoWinrt(HWND hwnd);
         void ApplyColorSettings();
-
-        DisplayColorMode GetTargetColorInfo(HWND hwnd);
 
     private:
         std::unique_ptr<mpv::MpvPlayer> m_mpvPlayer;
-
-    public:
-        void PlayerView_CompositionScaleChanged(winrt::Microsoft::UI::Xaml::Controls::SwapChainPanel const& sender,
-                                                winrt::Windows::Foundation::IInspectable const& args);
     };
 }; // namespace winrt::mpv_winui3_demo::implementation
 

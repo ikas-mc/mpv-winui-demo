@@ -124,6 +124,7 @@ namespace mpv
             return;
         }
 
+        // set color info, here is an example for SDR
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "no");
         mpv_set_option_string(m_mpv, "target-prim", "bt.709");
         mpv_set_option_string(m_mpv, "target-trc", "srgb");
@@ -136,6 +137,7 @@ namespace mpv
             return;
         }
 
+        // set color, here is an example for WCG
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "yes");
         mpv_set_option_string(m_mpv, "target-colorspace-hint-mode", "source");
     }
@@ -147,6 +149,7 @@ namespace mpv
             return;
         }
 
+        // set color, here is an example for HDR
         mpv_set_option_string(m_mpv, "target-colorspace-hint", "yes");
         mpv_set_option_string(m_mpv, "target-colorspace-hint-mode", "source");
     }

@@ -2,10 +2,12 @@
 #include "MainPage.h"
 #include <winrt/Windows.Graphics.Display.h>
 #include "MainPage.g.cpp"
-
 using namespace winrt;
 using namespace Windows::UI::Xaml;
-
+#if defined(_MSC_VER)
+    #include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#endif
 namespace winrt::mpv_winui2_demo::implementation
 {
     MainPage::MainPage() : m_mpvPlayer(std::make_unique<mpv::MpvPlayer>())
@@ -49,6 +51,7 @@ namespace winrt::mpv_winui2_demo::implementation
 
     void MainPage::ApplyColorSettings()
     {
+        // TODO use displayInformation.AdvancedColorInfoChanged to listen color mode changed event
         auto displayInformation = winrt::Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
         auto colorInfo = displayInformation.GetAdvancedColorInfo();
 

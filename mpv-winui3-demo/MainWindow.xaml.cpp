@@ -5,6 +5,11 @@
 #endif
 #include <microsoft.ui.xaml.window.h>
 
+// for DisplayInformation
+#include <windows.graphics.display.interop.h>
+#include <winrt/windows.graphics.display.h>
+//
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -22,8 +27,8 @@ namespace winrt::mpv_winui3_demo::implementation
         m_mpvPlayer->SetSwapChainPanel(PlayerView());
     }
 
-    void MainWindow::PlayButton_Click(winrt::Windows::Foundation::IInspectable const& sender,
-                                      winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    void MainWindow::PlayButton_Click([[maybe_unused]] winrt::Windows::Foundation::IInspectable const& sender,
+                                      [[maybe_unused]] winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
     {
         auto url = UrlInput().Text();
         if (url.empty())
@@ -36,21 +41,59 @@ namespace winrt::mpv_winui3_demo::implementation
         m_mpvPlayer->Play(url);
     }
 
-    void MainWindow::PlayerView_SizeChanged(IInspectable const&, SizeChangedEventArgs const& args)
+    void MainWindow::PlayerView_SizeChanged([[maybe_unused]] IInspectable const& sender,
+                                            SizeChangedEventArgs const& args)
     {
         auto width = static_cast<uint32_t>(args.NewSize().Width * PlayerView().CompositionScaleX());
         auto height = static_cast<uint32_t>(args.NewSize().Height * PlayerView().CompositionScaleY());
         m_mpvPlayer->UpdateSize(width, height);
     }
 
-    void MainWindow::PlayerView_CompositionScaleChanged(SwapChainPanel const& sender, IInspectable const& args)
+    void MainWindow::PlayerView_CompositionScaleChanged([[maybe_unused]] SwapChainPanel const& sender,
+                                                        [[maybe_unused]] IInspectable const& args)
     {
         auto scaleX = PlayerView().CompositionScaleX();
         auto scaleY = PlayerView().CompositionScaleY();
         m_mpvPlayer->UpdateSwapChainScale(scaleX, scaleY);
     }
 
-    DisplayColorMode MainWindow::GetTargetColorInfo(HWND hwnd)
+    DisplayColorMode MainWindow::GetTargetColorInfoWinrt(HWND hwnd)
+    {
+        DisplayColorMode colorMode{};
+
+        // must create winrt::Windows::System::DispatcherQueueController before
+        // see App.xaml.cpp
+        // TODO use displayInformation.AdvancedColorInfoChanged to listen color mode changed event
+        winrt::Windows::Graphics::Display::DisplayInformation displayInformation{ nullptr };
+        auto result = winrt::get_activation_factory<winrt::Windows::Graphics::Display::DisplayInformation,
+                                                    ::IDisplayInformationStaticsInterop>()
+                          ->GetForWindow(
+                              hwnd, winrt::guid_of<decltype(displayInformation)>(), winrt::put_abi(displayInformation));
+        if (FAILED(result))
+        {
+            return colorMode;
+        }
+
+        auto colorInfo = displayInformation.GetAdvancedColorInfo();
+        auto kind = colorInfo.CurrentAdvancedColorKind();
+        switch (kind)
+        {
+            case winrt::Windows::Graphics::Display::AdvancedColorKind::StandardDynamicRange:
+                break;
+            case winrt::Windows::Graphics::Display::AdvancedColorKind::WideColorGamut:
+                colorMode.isWcg = true;
+                break;
+            case winrt::Windows::Graphics::Display::AdvancedColorKind::HighDynamicRange:
+                colorMode.isHdr = true;
+                break;
+            default:
+                break;
+        }
+
+        return colorMode;
+    }
+
+    DisplayColorMode MainWindow::GetTargetColorInfoWin32(HWND hwnd)
     {
         DisplayColorMode colorMode{};
         HMONITOR hMonitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTOPRIMARY);
@@ -115,7 +158,8 @@ namespace winrt::mpv_winui3_demo::implementation
         HWND hwnd{ nullptr };
         this->try_as<IWindowNative>()->get_WindowHandle(&hwnd);
 
-        auto colorMode = GetTargetColorInfo(hwnd);
+        auto colorMode1 = GetTargetColorInfoWinrt(hwnd);
+        auto colorMode = GetTargetColorInfoWin32(hwnd);
 
         if (colorMode.isHdr)
         {

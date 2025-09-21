@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "App.xaml.h"
+#include <DispatcherQueue.h>
 #include "MainWindow.xaml.h"
 
 using namespace winrt;
@@ -38,6 +39,12 @@ namespace winrt::mpv_winui3_demo::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
+        DispatcherQueueOptions options{ sizeof(options), DQTYPE_THREAD_CURRENT, DQTAT_COM_NONE };
+        winrt::check_hresult(
+            CreateDispatcherQueueController(options,
+                                            reinterpret_cast<ABI::Windows::System::IDispatcherQueueController**>(
+                                                winrt::put_abi(dispatcherQueueController))));
+
         window = make<MainWindow>();
         window.Activate();
     }
